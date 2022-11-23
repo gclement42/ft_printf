@@ -1,25 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gclement <gclement@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/12 09:11:53 by gclement          #+#    #+#             */
-/*   Updated: 2022/11/12 09:18:24 by gclement         ###   ########.fr       */
+/*   Created: 2022/11/21 13:10:35 by gclement          #+#    #+#             */
+/*   Updated: 2022/11/22 13:15:55 by gclement         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef FT_PRINTF_H
+# define FT_PRINTF_H
 
-void	ft_putstr_fd(char *s, int fd)
-{
-	int	i;
+# include <stdarg.h>
+# include "Libft/libft.h"
 
-	i = 0;
-	while (s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-}
+int		ft_putnbr_base_and_count(va_list args, int type);
+int		ft_printf(const char *format, ...);
+int		ft_put_unsigned_int(unsigned int nbr, int fd);
+int		ft_putstr_and_count(char *s, int fd);
+int		ft_putnbr_and_count(int n, int fd);
+
+#endif

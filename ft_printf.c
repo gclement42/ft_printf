@@ -1,82 +1,68 @@
-#include <stdarg.h>
-#include <unistd.h>
-#include <stdio.h>
-#include "libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gclement <gclement@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/20 13:46:47 by gclement          #+#    #+#             */
+/*   Updated: 2022/11/22 15:51:17 by gclement         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void print_char(const int c)
+#include "ft_printf.h"
+
+int	switch_type(const char c, va_list arg)
 {
-    write(1, &c, 1);
-}
-
-int	ft_putnbr_base(int nbr, char *base)
-{
-	long	int lnbr;
-	int base_l = 16;
-
-	lnbr = nbr;
-	if(base_l != 0)
+	if (c == 'c')
 	{
-		if(lnbr < 0)
-			lnbr = lnbr * -1;
-		if(lnbr > 0)
-		{
-			ft_putnbr_base(lnbr / base_l, base);
-			return (base[lnbr % base_l]);
-		}
+		ft_putchar_fd(va_arg(arg, int), 1);
+		return (1);
 	}
+	else if (c == 's')
+		return (ft_putstr_and_count(va_arg(arg, char *), 1));
+	else if (c == '%')
+		return (ft_putchar_fd('%', 1), 1);
+	else if (c == 'd')
+		return (ft_putnbr_and_count(va_arg(arg, int), 1));
+	else if (c == 'u')
+		return (ft_put_unsigned_int(va_arg(arg, unsigned int), 1));
+	else if (c == 'x')
+		return (ft_putnbr_base_and_count(arg, 'x'));
+	else if (c == 'X')
+		return (ft_putnbr_base_and_count(arg, 'X'));
+	else if (c == 'i')
+		return (ft_putnbr_and_count(va_arg(arg, int), 1));
+	else if (c == 'p')
+		return (ft_putnbr_base_and_count(arg, 'p'));
 	return (0);
 }
 
-int switch_type(const char c, va_list arg)
+int	ft_printf(const char *format, ...)
 {
+	size_t	i;
+	size_t	count;
+	va_list	parameters;
 
-    switch (c)
-    {
-        case 'c':
-        {
-            print_char(va_arg(arg, int));
-            break;
-        }
-        case '%':
-        {
-            print_char('%');
-            break;
-        }
-        case 'd':
-        {
-            ft_putstr_fd(ft_itoa(va_arg(arg, int)), 1);
-            break;
-        }
-        case 'x':
-        {
-            ft_putnbr_fd(ft_putnbr_base(va_arg(arg, int), "0123456789ABCDEF"), 1);
-            break;
-        }
-    }
-}
-int ft_printf( const char *format, ... )
-{
-    int     i;
-    va_list parameters;
-
-    va_start( parameters, format);
-    i = 0;
-    while (format[i])
-    {
-        if (format[i] != '%')
-            write(1, &format[i], 1);
-        else
-        {
-            i++;
-            switch_type(format[i], parameters);
-        }
-        i++;
-    }
-    return (i);
-}
-
-int main()
-{
-    printf("Yo : %x\n", 456);
-    ft_printf("salut mon pote %x", 456);
+	va_start(parameters, format);
+	i = 0;
+	count = 0;
+	if (write(1, 0, 0) < 0)
+		return (-1);
+	while (i < ft_strlen(format))
+	{
+		if (format[i] != '%')
+		{
+			ft_putchar_fd(format[i], 1);
+			i++;
+			count++;
+		}
+		else
+		{
+			i++;
+			count += switch_type(format[i], parameters);
+			i++;
+		}
+	}
+	return (count);
 }
